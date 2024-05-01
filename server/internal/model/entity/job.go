@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 // Job struct having the details related to a job
