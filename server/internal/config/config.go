@@ -15,7 +15,7 @@ type ServerConfig struct {
 
 func NewServerConfig() *ServerConfig {
 	return &ServerConfig{
-		Port:              os.Getenv("PORT"),
+		Port:              os.Getenv("APP_PORT"),
 		ServerApiPrefixV1: os.Getenv("SERVER_API_PREFIX_V1"),
 		BasePath:          os.Getenv("SERVER_BASE_PATH"),
 	}

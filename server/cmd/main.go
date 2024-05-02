@@ -24,15 +24,14 @@ func main() {
 	store := store.GetStoreInstance()
 	store.NewStore()
 	utils.LogInfo("store initialized")
-	
-	
-	service.UpdateJobStatus(store.GetQueue())
-
 	router := gin.Default()
 	register.Routes(router, serverConfig)
+	
+	go service.UpdateJobStatus(store.GetQueue())
 
 	if err := router.Run(":" + serverConfig.Port); err != nil {
 		utils.LogFatal(err)
 	}
 	utils.LogInfo("server started")
+	
 }

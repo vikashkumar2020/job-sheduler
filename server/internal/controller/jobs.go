@@ -1,6 +1,8 @@
 package controller
 
 import (
+	// "fmt"
+	"fmt"
 	"sync"
 	"time"
 
@@ -30,10 +32,25 @@ func GetAllJobs(c *gin.Context) {
 		return
 	}
 
-
-
-	defer conn.Close()
-	
+	jobStatus := store.GetStoreInstance().GetQueue()
+	defer conn.Close();
+	// whenever recieve new update in jobstatus send all jobs to the clients
+	for {
+		select {
+		case jobs := <-jobStatus:
+			// Send job updates to the client
+			list := *store.GetStoreInstance().GetStore()
+			fmt.Println("update",jobs)
+			response := types.JobResponse{
+				Jobs: list,
+				Length: len(list),
+			}
+			if err := conn.WriteJSON(response); err != nil {
+				fmt.Println("Error writing to WebSocket:", err)
+				return
+			}
+		}
+	}
 }
 
 func CreateJob(c *gin.Context) {
@@ -59,7 +76,7 @@ func CreateJob(c *gin.Context) {
 	job := model.Job{
 		ID:        uuid.New(),
 		Name:      requestBody.Name,
-		Duration:  time.Duration(requestBody.Time),
+		Duration:  time.Duration(requestBody.Time*uint64(time.Millisecond)),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Status:    "Pending",
@@ -70,7 +87,7 @@ func CreateJob(c *gin.Context) {
 	defer jobMutex.Unlock()
 
 	// save the job in the store
-	store.SaveJob(job)
+	store.CreateJob(job)
 	service.SJFSchedule()
 
 	c.JSON(
