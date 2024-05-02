@@ -7,12 +7,14 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Server config
 type ServerConfig struct {
 	Port              string
 	ServerApiPrefixV1 string
 	BasePath          string
 }
 
+// new server config provider
 func NewServerConfig() *ServerConfig {
 	return &ServerConfig{
 		Port:              os.Getenv("APP_PORT"),

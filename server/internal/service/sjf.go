@@ -11,46 +11,41 @@ import (
 func SJFSchedule() {
 
 	jobs := *store.GetStoreInstance().GetStore()
-	
+
 	sort.Slice(jobs, func(i, j int) bool {
 		return jobs[i].Duration < jobs[j].Duration
 	})
 
 }
 
-func UpdateJobStatus(jobChannel chan string)  {
+func UpdateJobStatus(jobChannel chan string) {
 
 	for {
 		jobs := *store.GetStoreInstance().GetStore()
-		fmt.Println("Total Jobs ",len(jobs))
+		fmt.Println("Total Jobs ", len(jobs))
 		if len(jobs) > 0 {
 
 			foundPending := false
 			for _, job := range jobs {
 				if job.Status == "Pending" {
-					store.GetStoreInstance().SaveJob(job.ID,"Running")
-					fmt.Println("time", job.Duration.Seconds())
+					store.GetStoreInstance().SaveJob(job.ID, "Running")
 					foundPending = true
 					fmt.Printf("Job %s started\n", job.Name)
 					if len(websocket.GetPoolInstance().Clients) > 0 {
-						jobChannel <- fmt.Sprintf("%s started having status Running",job.Name)
+						jobChannel <- fmt.Sprintf("%s started having status Running", job.Name)
 					}
-					
-					
+
 					time.Sleep(job.Duration)
 					// Update job status to "Completed"
 					job.Status = "Completed"
 					job.UpdatedAt = time.Now()
-					store.GetStoreInstance().SaveJob(job.ID,"Completed")
+					store.GetStoreInstance().SaveJob(job.ID, "Completed")
 					fmt.Printf("Job %s completed\n", job.Name)
 
 					// Send the updated job status through the channel
 					if len(websocket.GetPoolInstance().Clients) > 0 {
-						jobChannel <- fmt.Sprintf("%s started having status Completed",job.Name)
+						jobChannel <- fmt.Sprintf("%s started having status Completed", job.Name)
 					}
-
-					// Exit the loop after handling one job
-					fmt.Println("jobs ",jobs)
 					break
 				}
 			}

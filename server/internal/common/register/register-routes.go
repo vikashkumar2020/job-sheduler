@@ -31,6 +31,7 @@ func CORSMiddleware() gin.HandlerFunc {
     }
 }
 
+// Routes 
 func Routes(router *gin.Engine, serverConfig *config.ServerConfig) {
 	router.Use(CORSMiddleware())
 	webV1RouterGroup := router.Group("/" + serverConfig.ServerApiPrefixV1)

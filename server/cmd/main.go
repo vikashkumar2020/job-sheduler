@@ -15,7 +15,7 @@ func main() {
 
 	// Initialize the config
 	config.LoadEnv()
-	utils.LogInfo("env loaded ")
+	utils.LogInfo("env loaded for configuration")
 
 	// Initialize the server
 	serverConfig := config.NewServerConfig()
@@ -32,13 +32,18 @@ func main() {
 
 	router := gin.Default()
 	register.Routes(router, serverConfig)
-	
+	utils.LogInfo("rigestered routes")
+
 	go service.UpdateJobStatus(pool.Broadcast)
+	utils.LogInfo("job routine is started")
+
 	go pool.Start()
+	utils.LogInfo("websocket listner is started")
 
 	if err := router.Run(":" + serverConfig.Port); err != nil {
 		utils.LogFatal(err)
 	}
+
 	utils.LogInfo("server started")
-	
+
 }

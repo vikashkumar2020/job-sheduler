@@ -15,6 +15,7 @@ import (
 	"job-sheduler/internal/service"
 )
 
+// websocket connection upgrader
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -24,6 +25,7 @@ var (
 	jobMutex sync.Mutex // Mutex to synchronize access to jobs
 )
 
+// handler to get all the jobs
 func GetAllJobs(c *gin.Context) {
 
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -46,6 +48,7 @@ func GetAllJobs(c *gin.Context) {
 
 }
 
+// handler to create a new job
 func CreateJob(c *gin.Context) {
 
 	// get the request body

@@ -8,14 +8,17 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// new socker user client
 type Client struct {
 	ID   string
 	Conn *websocket.Conn
 	Pool *Pool
 }
 
+// singelton instance for new connection
 var poolInstance *Pool
 
+// Connection Pool implementation for websockets
 type Pool struct {
 	Register   chan *Client
 	Unregister chan *Client
@@ -23,6 +26,8 @@ type Pool struct {
 	Broadcast  chan string
 }
 
+
+// function to follow singleton pattern to get pool
 func GetPoolInstance() *Pool {
 	if poolInstance == nil {
 		poolInstance = &Pool{}
@@ -30,6 +35,7 @@ func GetPoolInstance() *Pool {
 	return poolInstance
 }
 
+// new pool provider
 func (pool *Pool) NewPool() {
 
 	pool.Register = make(chan *Client)
@@ -39,6 +45,7 @@ func (pool *Pool) NewPool() {
 
 }
 
+// listner to manage activites on the websocket pool
 func (pool *Pool) Start() {
 	for {
 		select {
@@ -65,6 +72,7 @@ func (pool *Pool) Start() {
 	}
 }
 
+// function to keep the clinet to listen 
 func (c *Client) Read() {
     defer func() {
         c.Pool.Unregister <- c
