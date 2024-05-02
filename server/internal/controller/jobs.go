@@ -1,8 +1,6 @@
 package controller
 
 import (
-	// "fmt"
-	"fmt"
 	"sync"
 	"time"
 
@@ -10,10 +8,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 
+	"job-sheduler/internal/infra/store"
+	socket "job-sheduler/internal/infra/websocket"
 	model "job-sheduler/internal/model/entity"
 	types "job-sheduler/internal/model/types"
 	"job-sheduler/internal/service"
-	"job-sheduler/internal/store"
 )
 
 var upgrader = websocket.Upgrader{
@@ -32,25 +31,19 @@ func GetAllJobs(c *gin.Context) {
 		return
 	}
 
-	jobStatus := store.GetStoreInstance().GetQueue()
-	defer conn.Close();
+	pool := socket.GetPoolInstance()
+
+	defer conn.Close()
 	// whenever recieve new update in jobstatus send all jobs to the clients
-	for {
-		select {
-		case jobs := <-jobStatus:
-			// Send job updates to the client
-			list := *store.GetStoreInstance().GetStore()
-			fmt.Println("update",jobs)
-			response := types.JobResponse{
-				Jobs: list,
-				Length: len(list),
-			}
-			if err := conn.WriteJSON(response); err != nil {
-				fmt.Println("Error writing to WebSocket:", err)
-				return
-			}
-		}
+	client := &socket.Client{
+		Conn: conn,
+		Pool: pool,
 	}
+
+	pool.Register <- client
+
+	client.Read()
+
 }
 
 func CreateJob(c *gin.Context) {
@@ -70,13 +63,13 @@ func CreateJob(c *gin.Context) {
 	}
 
 	// get the store instance
-	store := store.GetStoreInstance()
+	storeData := store.GetStoreInstance()
 
 	// create the result
 	job := model.Job{
 		ID:        uuid.New(),
 		Name:      requestBody.Name,
-		Duration:  time.Duration(requestBody.Time*uint64(time.Millisecond)),
+		Duration:  time.Duration(requestBody.Time * uint64(time.Second)),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Status:    "Pending",
@@ -87,14 +80,16 @@ func CreateJob(c *gin.Context) {
 	defer jobMutex.Unlock()
 
 	// save the job in the store
-	store.CreateJob(job)
+	storeData.CreateJob(job)
 	service.SJFSchedule()
-
+	pool := socket.GetPoolInstance()
+	pool.Broadcast <- "update"
 	c.JSON(
 		200,
 		gin.H{
 			"message": "Job Added Successfully",
 			"status":  "SUCCESS",
+			"data":    *store.GetStoreInstance().GetStore(),
 		},
 	)
 }

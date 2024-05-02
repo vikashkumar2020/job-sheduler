@@ -6,34 +6,25 @@ import (
 
 	"github.com/google/uuid"
 )
-
-
 type Store struct {
 	storeInstance *[]model.Job
-	jobUpdates chan string
 }
 
-var databaseInstance *Store
-
+var storeInstance *Store
 
 func (store *Store) NewStore() {
 	store.storeInstance = &[]model.Job{}
-	store.jobUpdates = make(chan string)
 }
 
 func GetStoreInstance() *Store {
-	if databaseInstance == nil {
-		databaseInstance = &Store{}
+	if storeInstance == nil {
+		storeInstance = &Store{}
 	}
-	return databaseInstance
+	return storeInstance
 }
 
 func (store *Store) GetStore() *[]model.Job {
 	return store.storeInstance
-}
-
-func (store *Store) GetQueue() chan string{
-	return store.jobUpdates
 }
 
 func (s *Store) CreateJob(job model.Job) {
