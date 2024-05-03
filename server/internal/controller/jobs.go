@@ -70,7 +70,6 @@ func CreateJob(c *gin.Context) {
 	// get the store instance
 	storeData := store.GetStoreInstance()
 
-	// create the result
 	job := model.Job{
 		ID:        uuid.New(),
 		Name:      requestBody.Name,

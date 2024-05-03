@@ -22,7 +22,6 @@ func UpdateJobStatus(jobChannel chan string) {
 
 	for {
 		jobs := *store.GetStoreInstance().GetStore()
-		fmt.Println("Total Jobs ", len(jobs))
 		if len(jobs) > 0 {
 
 			foundPending := false
