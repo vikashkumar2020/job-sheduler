@@ -1,21 +1,19 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import { useWebSocket } from './api/getAllJobs';
 
 function App() {
-  const [socket, setSocket] = useState<WebSocket | null>(null);
 
-  useEffect(() => {
-    const newSocket = new WebSocket('ws://localhost:8080/api/v1/jobs');
-    newSocket.onopen = () => {
-      console.log('Connection established');
-      newSocket.send('Hello Server!');
-    }
-    newSocket.onmessage = (message) => {
-      console.log('Message received:', message.data);
-    }
-    setSocket(newSocket);
-    return () => newSocket.close();
-  }, [])
+    const socket = useWebSocket();
+
+    useEffect(() => {
+      if (socket) {
+        socket.onmessage = (message) => {
+          console.log('Message received:', message.data);
+        };
+      }
+    }, [socket]);
+    
 
   return (
     <>
