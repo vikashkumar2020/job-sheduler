@@ -1,14 +1,13 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import { useWebSocket } from './api/getAllJobs';
-import AddForm from './components/addForm';
-import JobListStats from './components/jobListStats';
 import { useSetRecoilState } from 'recoil';
 import { jobListState } from './recoil/atom/jobAtom';
+import JobList from './components/jobList';
+import { JobInterface } from './interfaces/job';
 
-function App() {
+const App: React.FC = () => {
     const setJobList = useSetRecoilState(jobListState);
-
     const socket = useWebSocket();
 
     useEffect(() => {
@@ -16,8 +15,7 @@ function App() {
             socket.onmessage = (message) => {
                 const data = JSON.parse(message.data);
                 if (data && data.jobs) {
-                  console.log(data.jobs)
-                    setJobList(data.jobs);
+                    setJobList(data.jobs as JobInterface[]);
                 }
             };
         }
@@ -28,13 +26,12 @@ function App() {
                 socket.close();
             }
         };
-    }, [socket]);
+    }, [socket, setJobList]);
 
     return (
-        <>
-            <AddForm />
-            <JobListStats />
-        </>
+        <div>
+            <JobList />
+        </div>
     );
 }
 

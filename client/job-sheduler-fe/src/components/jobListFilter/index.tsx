@@ -1,10 +1,9 @@
 import React from "react";
 import { useRecoilState } from "recoil";
 import { jobListFilterState } from "../../recoil/atom/jobAtom";
+import styles from './index.module.css';
 
-interface JobListFiltersProps {
-  
-}
+interface JobListFiltersProps {}
 
 const JobListFilters: React.FC<JobListFiltersProps> = () => {
   const [filter, setFilter] = useRecoilState<string>(jobListFilterState);
@@ -15,16 +14,15 @@ const JobListFilters: React.FC<JobListFiltersProps> = () => {
   };
 
   return (
-    <>
-      Filter:
-      <select value={filter} onChange={updateFilter}>
+    <div className={styles.jobListFilters}>
+      <span className={styles.filterText}>Filter:</span>
+      <select className={styles.filterSelect} value={filter} onChange={updateFilter}>
         <option value="All">All</option>
         <option value="Pending">Pending</option>
         <option value="Running">Running</option>
         <option value="Completed">Completed</option>
       </select>
-      <p></p>
-    </>
+    </div>
   );
 };
 
