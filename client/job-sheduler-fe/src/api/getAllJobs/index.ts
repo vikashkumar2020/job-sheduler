@@ -5,7 +5,7 @@ export function useWebSocket() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
-    const newSocket = new WebSocket("ws://localhost:8080/api/v1/jobs");
+    const newSocket = new WebSocket(`ws://${import.meta.env.VITE_BACKEND_URL}/jobs`);
 
     newSocket.onopen = () => {
       console.log('Connection established');
