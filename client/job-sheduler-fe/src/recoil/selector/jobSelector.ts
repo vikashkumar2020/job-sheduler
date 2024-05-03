@@ -37,3 +37,5 @@ const filteredJobListState = selector({
       };
     }
   });
+
+  export {filteredJobListState, jobListStatsState}

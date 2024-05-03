@@ -1,0 +1,39 @@
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 30vw;
+    margin: 0 auto;
+  }
+  
+  .label {
+    margin-bottom: 5px;
+  }
+  
+  .input {
+    padding: 8px;
+    margin-bottom: 10px;
+    outline: none;
+    border: 1px solid grey;
+    border-radius: 10px;
+  }
+  
+  .error {
+    color: red;
+    margin-top: 5px;
+  }
+  
+  .button {
+    padding: 10px 6px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    width: 80px;
+  }
+  
+  .button:hover {
+    background-color: #0056b3;
+  }
+  

@@ -6,7 +6,7 @@ interface newJobProps{
 export async function addNewJob(newJob:newJobProps) {
   
   try {
-    let response=await fetch(`localhost:8080/api/v1/job`,{
+    let response=await fetch(`http://localhost:8080/api/v1/job`,{
       method:'POST',
       headers:{
         "Content-Type": "application/json",

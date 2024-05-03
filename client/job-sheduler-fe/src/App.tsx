@@ -1,25 +1,41 @@
-import { useEffect, useState } from 'react'
-import './App.css'
+import { useEffect } from 'react';
+import './App.css';
 import { useWebSocket } from './api/getAllJobs';
+import AddForm from './components/addForm';
+import JobListStats from './components/jobListStats';
+import { useSetRecoilState } from 'recoil';
+import { jobListState } from './recoil/atom/jobAtom';
 
 function App() {
+    const setJobList = useSetRecoilState(jobListState);
 
     const socket = useWebSocket();
 
     useEffect(() => {
-      if (socket) {
-        socket.onmessage = (message) => {
-          console.log('Message received:', message.data);
-        };
-      }
-    }, [socket]);
-    
+        if (socket) {
+            socket.onmessage = (message) => {
+                const data = JSON.parse(message.data);
+                if (data && data.jobs) {
+                  console.log(data.jobs)
+                    setJobList(data.jobs);
+                }
+            };
+        }
 
-  return (
-    <>
-      hi there
-    </>
-  )
+        // Clean up function
+        return () => {
+            if (socket) {
+                socket.close();
+            }
+        };
+    }, [socket]);
+
+    return (
+        <>
+            <AddForm />
+            <JobListStats />
+        </>
+    );
 }
 
-export default App
+export default App;
